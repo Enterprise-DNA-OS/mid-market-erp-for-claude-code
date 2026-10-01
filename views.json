@@ -1,14 +1,30 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Mid-Market ERP for Claude Code: what needs attention, rendered by npm run view",
+    "title": "The week",
+    "subtitle": "What needs a decision, what can ship, and where work is ahead of the claims.",
     "sections": [
-      {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
-      }
+      { "title": "Needs attention", "sql": "select record,code,reason from (select 'order' as record,code,'overdue' as reason,due_on from v_orders where status='open' and due_on<current_date union all select 'project',code,'forecast over budget',end_on from v_projects where status='active' and forecast_cost>budget_cost union all select 'retention',code,'report to subcontractor due',release_due from retentions where released_on is null and coalesce(last_reported_on,withheld_on-91)<current_date-90) x order by record,code" },
+      { "title": "Ship plan", "sql": "select o.code,o.partner as customer,o.due_on,i.code as item,l.quantity-l.completed as remaining,s.on_hand,greatest(l.quantity-l.completed-s.on_hand,0) as short from v_orders o join order_lines l on l.order_id=o.id join items i on i.id=l.item_id join v_stock s on s.item_id=l.item_id and s.warehouse_id=o.warehouse_id where o.kind='sales' and o.status='open' and l.completed<l.quantity order by o.due_on" },
+      { "title": "Work in progress", "note": "Positive means work done that has not been claimed yet.", "sql": "select code,name,earned_revenue as earned,claimed,(earned_revenue-claimed)::numeric(14,2) as unclaimed from v_projects where status<>'completed' order by code" }
+    ]
+  },
+  {
+    "name": "branches",
+    "title": "Branches",
+    "subtitle": "Stock and open work by branch. Amounts exclude GST.",
+    "sections": [
+      { "title": "Stock by warehouse", "sql": "select branch,warehouse,code,name,on_hand,committed,on_hand-committed as available,incoming from v_stock order by branch,code" },
+      { "title": "Open sales by branch", "sql": "select branch,count(*) as orders,sum(remaining_value)::numeric(14,2) as open_value from v_orders where kind='sales' and status in ('open','draft') group by branch order by branch" },
+      { "title": "Projects by branch", "sql": "select branch,code,name,status,contract_value,forecast_cost from v_projects order by branch,code" }
+    ]
+  },
+  {
+    "name": "money",
+    "title": "Money owed",
+    "sections": [
+      { "title": "Customers", "note": "Balances copied from the accounting ledger, not a bank feed.", "sql": "select i.code,c.name as customer,i.due_on,(i.total-i.paid)::numeric(14,2) as outstanding,greatest(current_date-i.due_on,0) as days_overdue from invoices i join customers c on c.id=i.customer_id where i.kind='receivable' and i.paid<i.total order by i.due_on" },
+      { "title": "Retention held for us by customers", "sql": "select code,name,retention_held_by_customer from v_projects where retention_held_by_customer>0 order by code" }
     ]
   }
 ]

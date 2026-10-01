@@ -1,0 +1,3 @@
+Order Type,Order Nbr.,Customer,Status,Requested On,Warehouse,Project,Customer Order Nbr.
+SO,IMP-SO1,IMP-C1,Open,20/10/2026,WLG-MAIN,IMP-P1,RF-77
+SO,IMP-SO0,IMP-C1,Completed,01/08/2026,WLG-MAIN,X,

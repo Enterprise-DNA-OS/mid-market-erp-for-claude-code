@@ -1,115 +1,158 @@
-<h1 align="center">Mid-Market ERP for Claude Code</h1>
+# Mid-Market ERP for Claude Code
 
-<p align="center">
-  <strong>The open-source mid-market ERP (orders, stock, projects) that is just a database and Claude Code.</strong>
-</p>
+Orders, stock across branches, projects, progress claims and subcontractor retentions in a database you own. A free, open-source operations base for NZ and AU businesses that sell from more than one warehouse and deliver projects: distributors who install, building services firms, equipment suppliers with a project arm. MIT licensed. Works with Claude Code, Codex, OpenCode or Cursor.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free. Clone, run the demo, import your MYOB Acumatica exports. | Your fields, rules, MYOB Acumatica data brought across, a web front end or a different stack. | Installed, connected and operated through Omni by Enterprise DNA. Setup fee, then a retainer. |
+| [Quick start](#quick-start) | [Get your version built](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=myob-acumatica&utm_medium=customise) | [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=myob-acumatica&utm_medium=managed) |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your MYOB Acumatica data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=myob-acumatica">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/myob-acumatica?utm_source=github&utm_medium=readme&utm_campaign=myob-acumatica">How it works</a></td>
-  </tr>
-</table>
+## What you pay for now
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-myob-acumatica">Instead of MYOB Acumatica</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+MYOB does not publish a price for MYOB Acumatica. It is sold through MYOB partners: a monthly subscription per named user, priced by edition and the type of user, plus a partner implementation project and a support plan quoted separately. Ask your partner for the per-user rate, the user count and the implementation invoice, and you have your annual bill.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
+## The weekly routine
 
----
+Monday: what is late, what can ship and which projects are ahead of their claims. Midweek: move stock between branches before buying more, chase late suppliers, log site costs. Month end: claim earned work, report retention money to subcontractors, chase overdue customers. The base records branches, warehouses, customers, suppliers and subcontractors, items, sales and purchase orders with partial receipts and dispatches, transfers, project tasks with budgets and percent complete, cost lines, progress claims, retentions, ledger balance snapshots, document evidence and change history. The general ledger, GST returns and payroll stay in your accounting system.
 
-## What is this
-
-Mid-Market ERP for Claude Code does the job you pay MYOB Acumatica for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the MYOB Acumatica dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays MYOB Acumatica per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=myob-acumatica).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+The demo business, Kauri Climate Demo, is fictional: an Auckland and Wellington heating and ventilation supplier that also installs on commercial jobs. It has a late order short of a heat pump, fan coils sitting in the wrong branch, a fit-out project 65,000 ahead of its claims and forecast over budget, a quiet school project, two retentions overdue for a report to the subcontractor and a customer over their credit limit.
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 20 or later on Windows, macOS or Linux. No database server needed for the demo:
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/mid-market-erp-for-claude-code.git
 cd mid-market-erp-for-claude-code
 npm install
 npm run demo
+npm test
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Open the folder in your coding agent and ask "Which projects have work we have not claimed?" or run `/weekly-review`.
 
-### Use it with your own Postgres or Supabase
+For real records, use a fresh `DATA_DIR` (or set `DATABASE_URL` to your own Postgres or Supabase), run `npm run migrate`, then `setup` and `import`. Never seed a real database. The embedded PGlite database serves one process at a time; a shared team setup needs Postgres with scoped access, TLS and tested backups.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+## Commands
 
-## The commands
-
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+61 CLI commands, each with human tables or `--json`, and 63 slash commands: one per CLI command plus /customise and /new-view. [Arguments and how each number is worked out](docs/cli.md).
 
 | Command | What it does |
 |---|---|
-| `/...` | ... |
+| /settings | Show the business name, country, currency, GST number, record retention and last backup. |
+| /branches | List branches with their warehouse count and active projects. |
+| /warehouses | List warehouses and the branch each belongs to. |
+| /customers | List customers with contact details, tax ID, credit limit and payment terms. |
+| /vendors | List suppliers and subcontractors with lead times. |
+| /items | List stock items with unit, cost, price, reorder point and preferred supplier. |
+| /sales-orders | List sales orders by due date with branch, warehouse, project and open value. |
+| /purchase-orders | List purchase orders by due date with the project they are bought for. |
+| /stock | Show on hand, committed to open sales, available and incoming for every item in every warehouse. |
+| /replenishment | List what to buy per warehouse after open sales and incoming purchases, with the supplier and lead time. |
+| /rebalance | Find items short in one warehouse while the other holds more than its reorder point, and how many to move. |
+| /ship-plan | List every open sales line by due date with the stock in its warehouse and any shortage. |
+| /supplier-chase | List purchase orders due within a week or already late, with days late and the project they feed. |
+| /projects | List projects with contract value, budget, actual, committed and forecast cost, and forecast margin. |
+| /tasks | List every project task with percent complete, budget, actual, committed and forecast cost, and earned revenue. |
+| /cost-to-complete | List tasks forecast to finish over budget, worst first. |
+| /wip | Compare work earned with work claimed on each open project: under-claimed means money not yet asked for. |
+| /claims-due | List active projects with unclaimed work and no claim for 30 days. |
+| /claims | List every progress claim with earned to date, this claim, retention, net amount and status. |
+| /retentions | List retention money held from subcontractors with its state: held, first report due, report due, release overdue or released. |
+| /receivables | List what customers owe from the ledger, aged current, 1-30, 31-60 and 60+. |
+| /payables | List what we owe suppliers from the ledger, with days overdue. |
+| /credit-hold | List customers whose ledger balance plus open orders exceeds their credit limit. |
+| /margins | Show shipped value, shipped margin and open value by branch. |
+| /attention | List what has gone wrong or quiet: overdue or quiet orders, unreleased drafts, projects over forecast or quiet, unreported retentions and overdue invoices. |
+| /records | List the document evidence register with retention dates and archive references. |
+| /movements | Show every stock movement: receipts, shipments, transfers and adjustments. |
+| /activity | Show the follow-up notes logged against orders and projects. |
+| /audit | Show the change history of every write made through the CLI. |
+| /help | List every CLI command and open the guide. |
+| /compliance | Check the records against the NZ and AU rules in docs/compliance.md: record retention, GST invoice details, NZ retention money, and house rules. |
+| /weekly-review | Write the Monday plan from three live reads: attention, ship plan and work in progress. |
+| /month-end | Run the month-end close checklist: claims due, work in progress, cost overruns, retention reports, overdue customers and late suppliers. |
+| /order | Show one order with its lines and follow-up notes. |
+| /project | Show one project: position, tasks, cost lines, claims and notes. |
+| /setup | Set the business name, country, currency, GST number or ABN, record retention and backup evidence, once per database. |
+| /add | Add a branch, warehouse, customer, vendor, item, project, task, order, retention, invoice or record. |
+| /set | Change allowed fields on an existing record. |
+| /line | Add a line to a draft order. |
+| /release | Release a draft order so it counts as committed stock or incoming supply. |
+| /cancel-order | Cancel an order that has not been received or shipped against. |
+| /receive | Record goods physically received against a purchase order line. |
+| /ship | Record goods physically dispatched against a sales order line. |
+| /transfer | Move stock from one warehouse to another. |
+| /adjust-stock | Record a stock count difference with its reason. |
+| /log-cost | Record a cost against a project task: labour, materials, subcontract, equipment or other. |
+| /progress | Update a task's percent complete. |
+| /claim | Create the next progress claim for a project from work earned since the last one, with contract retention taken off. |
+| /issue-claim | Mark a draft claim issued once the tax invoice is raised in the ledger. |
+| /claim-paid | Mark an issued claim paid with the ledger evidence. |
+| /report-retention | Record that the retention money report went to the subcontractor. |
+| /release-retention | Record retention money released to the subcontractor. |
+| /invoice-balance | Copy an invoice balance verified in the accounting ledger. |
+| /log | Record a factual follow-up note on an order or project. |
+| /complete-project | Close a project with no open orders left. |
+| /draft-order | Draft a sales order confirmation to the customer into drafts/. |
+| /draft-chase | Draft a supplier follow-up for a late or due purchase order into drafts/. |
+| /draft-statement | Draft a statement letter to a customer listing their outstanding invoices into drafts/. |
+| /draft-retention-report | Draft the retention money report for a subcontractor into drafts/. |
+| /import | Bring records across from MYOB Acumatica CSV exports. |
+| /export | Write a complete snapshot of every table to a JSON file. |
+| /customise | Add a field, rename a status, change a rule or add a report in plain language, with a migration and a test. |
+| /new-view | Add a read-only HTML view from a plain-language description. |
 
-## Instead of myob-acumatica
+## Ten questions the standard screens do not answer
 
-<!-- TODO(author): how to bring data across from MYOB Acumatica; link docs/replace-myob-acumatica.md -->
+Each one runs on the demo today and is a query you can change.
 
-## Architecture
+1. Which projects have work done that we have not claimed yet, and how much? `npm run erp -- wip`
+2. Which tasks will finish over budget at the rate costs are running? `npm run erp -- cost-to-complete`
+3. What stock can one branch send the other instead of buying more? `npm run erp -- rebalance`
+4. Which late sales orders are short of stock in their own warehouse? `npm run erp -- ship-plan`
+5. Which retention money is overdue for a report to the subcontractor? `npm run erp -- retentions`
+6. Which customers are over their credit limit once open orders are counted? `npm run erp -- credit-hold`
+7. Which active projects have gone a month without a claim? `npm run erp -- claims-due`
+8. What have we shipped, at what margin, by branch? `npm run erp -- margins`
+9. What is left for month end before the accountant closes the books? `npm run erp -- month-end`
+10. Which invoices over $1,000 are missing the buyer details GST needs? `npm run erp -- compliance`
 
-```
-mid-market-erp-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+## Your first hour: ten things to ask for
 
-## Built for coding agents
+1. Put our name, logo and colours on the progress claim.
+2. Set up our branches and warehouses with the codes we use now.
+3. Do a test run of the import with our customer and item exports.
+4. Load our opening stock count for each warehouse.
+5. Show me which projects are ahead of their claims.
+6. Draft this month's claim for our biggest project.
+7. Draft the retention report for each subcontractor we hold money for.
+8. Tell me what Wellington can send Auckland this week.
+9. Add a site supervisor field to projects.
+10. Make a Monday view for the operations manager.
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+## Documents and views
 
-## Contributing
+Edit `brand.json` once. `npm run docs` writes progress claims, purchase orders, sales confirmations, retention money statements and project cost reports to `docs-out/`, one HTML file per record, ready to print to PDF. `npm run view` writes the week, branches and money views to `views/`. Nothing sends.
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+## Bring your history
 
-## Want it installed and run for you?
+[The MYOB Acumatica guide](docs/replace-myob-acumatica.md) covers Export to Excel from each list screen, the columns read, the test run, what maps and what stays behind. `npm run erp -- import myob-acumatica bundle exports --date-order=dmy --apply` loads every file in one transaction; a failed row keeps nothing. Open quantities only, so nothing ships twice.
 
-Enterprise DNA installs Mid-Market ERP for Claude Code for your business, migrates your MYOB Acumatica data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+## Controls and scope
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=myob-acumatica)
-- Read more: [enterprisedna.co/omni/instead-of/myob-acumatica](https://enterprisedna.co/omni/instead-of/myob-acumatica?utm_source=github&utm_medium=readme&utm_campaign=myob-acumatica)
+Receipts and dispatches cannot exceed the open line. Stock cannot go negative in any warehouse. Unique event references stop a retry from doubling a receipt, transfer or cost. Claims are worked out from percent complete and never exceed what is earned. Every write is one transaction with an audit row.
 
-## License
+[Record checks](docs/compliance.md) cover NZ and AU record retention, GST invoice details, NZ retention money trust and reporting, and house rules, each with its source. They check recorded evidence, not legal compliance. [Why no front end](docs/why-no-front-end.md) says honestly what a screen gives that this does not.
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+This is the operations side of an ERP, not the general ledger, bank feeds, GST filing, payroll or manufacturing planning, and it does not claim parity with MYOB Acumatica.
+
+## Verification
+
+`npm test` builds a temporary database, migrates and seeds it, runs all 61 CLI commands, and checks stock, transfer, project cost, claim and retention arithmetic, duplicate events, rollback, ambiguous names, the import, drafts and branded HTML. CI runs it on Windows, Linux and a real Postgres.
+
+## Licence
+
+MIT. Built by Enterprise DNA. Not affiliated with MYOB, Acumatica or Anthropic. [Omni by Enterprise DNA](https://enterprisedna.co/omni/instead-of/myob-acumatica?utm_source=github&utm_campaign=myob-acumatica&utm_medium=readme) installs, customises and runs your version. [Book 30 minutes with Sam](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=myob-acumatica&utm_medium=readme).

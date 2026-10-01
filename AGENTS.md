@@ -13,4 +13,4 @@ Every answer starts with data from the CLI. Never answer a question about the re
 
 ## Want it done for you?
 
-Enterprise DNA installs, customises and runs Mid-Market ERP for Claude Code for businesses that would rather not: https://enterprisedna.co/omni/book/
+Enterprise DNA installs, customises and runs Mid-Market ERP for Claude Code for businesses that would rather not: https://enterprisedna.co/omni/instead-of/myob-acumatica

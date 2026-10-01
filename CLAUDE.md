@@ -1,43 +1,41 @@
-# Mid-Market ERP for Claude Code: operating instructions
+# Mid-Market ERP for Claude Code
 
-This file is the brain. Claude Code reads it at the start of every session. It says who this is for, how work gets done, and the one right way to do each recurring job.
+## Business context
 
-## Who this is for
+Business: [your business]. Operator: [name and role]. One database holds one business, one country and one currency, across as many branches and warehouses as you run. What matters: orders shipped on time, stock in the right branch, project work claimed as it is earned, subcontractors' retention handled by the rules. Kauri Climate Demo is fictional.
 
-- **Business:** [YOUR BUSINESS]
-- **Operator:** [YOUR NAME], [your role]
-- **What matters most:** [the one or two outcomes you care about]
+## Routes
 
-Fill this in once. A worker with context knows. A worker without it guesses.
+Read the matching .claude/commands recipe. Arguments and calculations: docs/cli.md.
 
-## How to work
-
-1. **Take a brief, not a script.** The operator describes the outcome. You run the right command and present the answer.
-2. **Read before you write.** Before drafting anything about a record, read its full history first.
-3. **Plain language.** Short sentences. No filler. Numbers in tables.
-4. **Silent success, loud problems.** No play-by-play. Say what broke and what you did about it.
-5. **Stop at the line.** Anything that sends, deletes, or faces a customer waits for a yes in this session.
-
-## Routing table: one right way for each recurring job
-
-| When the operator asks for... | Use this |
+| Job | Route |
 |---|---|
-| <!-- TODO(author): one row per slash command --> | `/...` |
+| Start the day | /attention, /ship-plan, /supplier-chase |
+| Monday plan | /weekly-review |
+| Stock | /stock, /rebalance, /transfer, /replenishment, /adjust-stock, /movements |
+| Buying | /purchase-orders, /add, /line, /release, /receive, /draft-chase |
+| Selling and dispatch | /sales-orders, /order, /ship, /credit-hold, /draft-order |
+| Projects | /projects, /project, /tasks, /log-cost, /progress, /cost-to-complete |
+| Claiming | /wip, /claims-due, /claim, /issue-claim, /claim-paid, /claims |
+| Subcontractor retention | /retentions, /draft-retention-report, /report-retention, /release-retention |
+| Money | /receivables, /payables, /draft-statement, /invoice-balance, /margins |
+| Month end | /month-end |
+| Record checks | /compliance and docs/compliance.md |
+| Reference data | /settings, /branches, /warehouses, /customers, /vendors, /items, /records, /activity, /audit |
+| Change records | /add, /set, /cancel-order, /log, /complete-project |
+| Paperwork and views | npm run docs, npm run view, /new-view |
+| Move or tailor | /setup, /import, /export, /customise |
 
-If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) and then propose a new command for it.
+## Rules
 
-## Hard rules
+Read fresh data before answering. Never invent receipts, shipments, counts, costs, percent complete, claims or ledger balances. List ambiguous candidates and ask. Nothing sends, pays, files GST or deletes. Drafts stay in drafts/. The ledger, bank, GST and payroll stay in the accounting system.
 
-- Never send email or messages from here. Draft to `drafts/`, a person sends.
-- Never delete records without an explicit yes in this session. Prefer marking closed or archived.
-- Never invent a record. If a name is ambiguous, list the candidates and ask.
-- The database is the source of truth. If the answer is not in it, say so.
+Percent complete comes from the project manager. Claims come from the claim command, never a hand-typed figure. Read docs/compliance.md before changing a record check; a clean check is not legal certification.
 
-## Where things live
+Use the CLI for writes. New questions are parameterised SQL in scripts/lib/domain.mjs. Schema changes are a new numbered migration; never edit one already applied. Export a backup and run npm test before real changes. Never seed a real database.
 
-- `scripts/` the CLI. `scripts/lib/db.mjs` picks `DATABASE_URL` (Postgres, Supabase) or the embedded database in `.data/`.
-- `supabase/migrations/` the schema, plain SQL. `npm run migrate` applies it.
-- `.claude/commands/` the slash commands. Add one every time the same ask comes twice.
-- `docs/` the thesis and the guide for moving off MYOB Acumatica.
+## Files
 
-Built by Enterprise DNA. Installed and run for you as part of Omni: https://enterprisedna.co/omni/instead-of/myob-acumatica
+Schema: supabase/migrations. CLI: scripts/erp.mjs. Reports and checks: scripts/lib/domain.mjs. Import: scripts/lib/import.mjs. Brand: brand.json. Documents: documents.json. Views: views.json. Moving off MYOB Acumatica: docs/replace-myob-acumatica.md. Other agents read AGENTS.md.
+
+Omni by Enterprise DNA installs, customises and runs this for you: https://enterprisedna.co/omni/instead-of/myob-acumatica

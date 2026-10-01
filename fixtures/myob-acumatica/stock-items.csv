@@ -1,0 +1,3 @@
+Inventory ID,Description,Item Status,Base Unit,Default Price,Last Cost,Reorder Point,Preferred Vendor
+IMP-I1,Condenser coil 5kW,Active,EA,980.00,610.00,2,IMP-V1
+IMP-I2,Discontinued grille,Inactive,EA,40.00,12.00,0,

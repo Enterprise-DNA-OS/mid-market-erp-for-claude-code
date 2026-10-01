@@ -1,14 +1,16 @@
 ---
-description: Make this system yours in plain language. Add a field, rename stages, change a rule, add a column to a document. Writes the migration, applies it, updates the commands that touch it.
+description: "Make it yours: add a field, rename a status, change a rule or add a report in plain language. Writes the numbered migration, updates the CLI and tests, then applies it."
 ---
 
-The operator will describe a change in their own words, for example "add a PO number to every order", "our stages are Enquiry, Site Visit, Quoted, Booked, Done", "invoices are due in 14 days not 20", "put the account manager on the client statement".
+# customise
 
-1. Read `CLAUDE.md`, the current schema in `supabase/migrations/`, and any command or document that touches the thing being changed. Say back in one line what you are about to change and where.
-2. Write the next numbered migration in `supabase/migrations/` (never edit an applied one). Keep names plain and lowercase. Default new columns sensibly so existing rows stay valid.
-3. Run `npm run migrate`. If it fails, fix the SQL and run it again.
-4. Update every place the change shows up: the CLI output, the affected slash commands, `views.json`, the document templates, the import mapping, and the README command table.
-5. Run `npm test`. Add an assertion for the new behaviour if the change is visible in a command's output.
-6. Update `brand.json` if the change is a branding one (business name, logo, colours) instead of a schema one, and rerun `npm run docs` or `npm run view` to show it.
+The operator describes the change in plain words, for example "add a site contact to projects", "retention on our contracts is 3 per cent, then 2 after practical completion", "show margin by salesperson".
 
-Report in three lines: what changed, the migration file, the commands that now show it. Never delete a column or a table without an explicit yes in this session.
+1. Read CLAUDE.md, the command it touches in scripts/erp.mjs or scripts/lib/domain.mjs, and the schema in supabase/migrations.
+2. Run `npm run erp -- export backups/before-<change>.json` first.
+3. Write the change as the next numbered migration (`0002_<change>.sql`). Never edit a migration that has already run. Keep existing records and the audit table.
+4. Update the CLI allowlists, reports, documents.json or views.json the change needs, and add a test for the new behaviour to scripts/smoke.mjs.
+5. Run `npm test` (temporary data). When it passes, run `npm run migrate` on the real database.
+6. For a rule that comes from law or a contract, add the source to docs/compliance.md.
+
+Report: what changed, the migration file, and the command to see it working.

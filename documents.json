@@ -1,11 +1,91 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "progress-claim",
+    "title": "Progress claim",
+    "for_each": "select k.id,k.code from claims k",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Claim",
+        "note": "Draft for review. Amounts exclude GST; the tax invoice comes from your accounting ledger.",
+        "sql": "select k.code as claim,p.code as project,p.name as contract,c.name as customer,k.claim_no,k.period_end,k.status,k.due_on,(select currency from settings limit 1) as currency from claims k join projects p on p.id=k.project_id join customers c on c.id=p.customer_id where k.id=$1"
+      },
+      {
+        "title": "Value of work",
+        "sql": "select k.earned_to_date as work_completed_to_date,k.previously_claimed as less_previously_claimed,k.this_claim as this_claim,k.retention as less_retention,(k.this_claim-k.retention)::numeric(14,2) as amount_due from claims k where k.id=$1"
+      },
+      {
+        "title": "Work completed by task",
+        "sql": "select t.code,t.name,t.budget_revenue as contract_value,t.pct_complete,round(t.budget_revenue*t.pct_complete/100,2) as completed_value from project_tasks t join claims k on k.project_id=t.project_id where k.id=$1 order by t.code"
+      }
+    ]
+  },
+  {
+    "name": "purchase-order",
+    "title": "Purchase order",
+    "for_each": "select id,code from orders where kind='purchase' and status<>'cancelled'",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Order",
+        "note": "Draft for review. Amounts exclude GST.",
+        "sql": "select code,partner as supplier,warehouse as deliver_to,project,task,status,due_on,total,(select currency from settings limit 1) as currency from v_orders where id=$1"
+      },
+      {
+        "title": "Lines",
+        "sql": "select l.line_no,i.code,i.name,i.uom,l.quantity,l.completed as received,l.unit_price,(l.quantity*l.unit_price)::numeric(14,2) as line_amount from order_lines l join items i on i.id=l.item_id where l.order_id=$1 order by l.line_no"
+      }
+    ]
+  },
+  {
+    "name": "sales-confirmation",
+    "title": "Sales order confirmation",
+    "for_each": "select id,code from orders where kind='sales' and status<>'cancelled'",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Order",
+        "note": "Draft for review. Amounts exclude GST.",
+        "sql": "select code,partner as customer,reference as your_reference,warehouse as dispatch_from,status,due_on,total,(select currency from settings limit 1) as currency from v_orders where id=$1"
+      },
+      {
+        "title": "Lines",
+        "sql": "select l.line_no,i.code,i.name,i.uom,l.quantity,l.completed as shipped,l.unit_price,(l.quantity*l.unit_price)::numeric(14,2) as line_amount from order_lines l join items i on i.id=l.item_id where l.order_id=$1 order by l.line_no"
+      }
+    ]
+  },
+  {
+    "name": "retention-statement",
+    "title": "Retention money statement",
+    "for_each": "select distinct v.id,v.code from vendors v join retentions r on r.vendor_id=v.id",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Subcontractor",
+        "note": "The information a holder gives the subcontractor when retention is first withheld and at least every three months after (NZ). Check against docs/compliance.md before sending.",
+        "sql": "select v.name as subcontractor,(select name from settings limit 1) as held_by,current_date as statement_date,(select sum(amount) from retentions r where r.vendor_id=v.id and r.released_on is null) as total_held from vendors v where v.id=$1"
+      },
+      {
+        "title": "Amounts retained",
+        "sql": "select r.code,p.code as project,p.name as contract,r.withheld_on,r.amount,r.release_due,r.trust_ref as held_in,coalesce(r.released_on::text,'held') as released from retentions r join projects p on p.id=r.project_id where r.vendor_id=$1 order by r.withheld_on"
+      }
+    ]
+  },
+  {
+    "name": "project-cost-report",
+    "title": "Project cost report",
+    "for_each": "select id,code from projects",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Position",
+        "note": "Forecast cost is actual cost scaled by percent complete; tasks not started use their budget.",
+        "sql": "select code,name,customer,status,contract_value,budget_cost,actual_cost,committed_cost,forecast_cost,(contract_value-forecast_cost)::numeric(14,2) as forecast_margin,earned_revenue,claimed from v_projects where id=$1"
+      },
+      {
+        "title": "Tasks",
+        "sql": "select code,name,pct_complete,budget_cost,actual_cost,committed_cost,forecast_cost,earned_revenue from v_tasks where project_id=$1 order by code"
+      }
     ]
   }
 ]
